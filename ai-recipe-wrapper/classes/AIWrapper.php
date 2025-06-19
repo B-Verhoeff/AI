@@ -35,6 +35,27 @@ class AIWrapper {
                 ['role' => 'user', 'content' => $prompt]
             ],
             'temperature' => 0.7
-        ];
+            $ch = curl_init($this->apiUrl);
+
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS. json_encode($data));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->apiKey
+            ]);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if (curl_errno($ch)) {
+                throw new Exception('cURL error: ' . curl_error($ch));
+            }
+
+            curl_close($ch);
+
+            return $this->handleResponse($response, $httpCode);
+
+        ]
     }
 }
