@@ -1,6 +1,7 @@
 <?php
 // Inclusief de AIWrapper klasse
 require_once 'classes/AIWrapper.php';
+require_once 'config/config.php';
 
 //Controleer of het formulier is verzonden
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ingredients'])) {
@@ -15,15 +16,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ingredients'])) {
         $ingredients = array_map('trim', explode(',', $ingredientsInput));
 
         // Maak een nieuwe instantie van de AIWrapper
-        $wrapper = new AIWrapper();
+        $wrapper = new AIWrapper(API_KEY);
 
         // Verwerk de ingredienten
         $wrapper->processInput($ingredients);
 
-        // Haal het antwoord op
-        $response = $wrapper->getResponse();
+        // Maak een prompt voor het recept
+        $ingredientsList = implode(', ', $ingredients);
+        $prompt = "Maak een volledig recept met de volgende ingrediënten: $ingredientsList. Geef een titel, ingrediëntenlijst en stapsgewijze instructies.";
 
-        // Stuur terug naar index met een foutmelding
+        // Haal het AI-antwoord op
+        $response = $wrapper->makeApiRequests($prompt);
+
+        // Stuur terug naar index met het AI-antwoord
         header('Location: index.php?message=: ' . urlencode($response));
         exit;
     } catch (Exception $e) {

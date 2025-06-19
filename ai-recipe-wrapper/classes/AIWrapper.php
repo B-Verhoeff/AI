@@ -40,7 +40,7 @@ class AIWrapper {
 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS. json_encode($data));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->apiKey
@@ -56,7 +56,17 @@ class AIWrapper {
             curl_close($ch);
 
             return $this->handleResponse($response, $httpCode);
+        }
 
-        ];
+    private function handleResponse($response, $httpCode) {
+        if ($httpCode !== 200) {
+            throw new Exception('API error: ' . $response);
+        }
+        $data = json_decode($response, true);
+        if (isset($data['choices'][0]['message']['content'])) {
+            return $data['choices'][0]['message']['content'];
+        } else {
+            throw new Exception('Ongeldig antwoord van AI API');
+        }
     }
 }
