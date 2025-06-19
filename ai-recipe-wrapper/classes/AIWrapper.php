@@ -2,7 +2,7 @@
 class AIWrapper {
     private $ingredients = [];
     private $response = '';
-    private $apiKey;
+    private $apiKey = '';
     private $model;
     private $apiUrl = 'https://api.openai.com/v1/chat/completions';
 
@@ -35,6 +35,7 @@ class AIWrapper {
                 ['role' => 'user', 'content' => $prompt]
             ],
             'temperature' => 0.7
+            ];
             $ch = curl_init($this->apiUrl);
 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -56,6 +57,6 @@ class AIWrapper {
 
             return $this->handleResponse($response, $httpCode);
 
-        ]
+        ];
     }
 }
